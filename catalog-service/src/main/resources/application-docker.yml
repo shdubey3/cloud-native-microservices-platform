@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: catalog-service
+  data:
+    mongodb:
+      uri: mongodb://mongouser:mongopassword@mongodb:27017/catalog?authSource=admin
+  redis:
+    host: redis-cache
+    port: 6379
+    timeout: 2000
+  cloud:
+    config:
+      uri: http://config-server:8888
+
+server:
+  port: 8084
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://eureka-server:8761/eureka/
+  instance:
+    hostname: catalog-service
+    preferIpAddress: false
+
+cache:
+  product:
+    ttl-minutes: 60
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
