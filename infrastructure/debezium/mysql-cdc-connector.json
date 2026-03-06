@@ -1,0 +1,25 @@
+{
+  "name": "mysql-user-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.mysql.MySqlConnector",
+    "database.hostname": "mysql",
+    "database.port": 3306,
+    "database.user": "appuser",
+    "database.password": "apppassword",
+    "database.server.id": 184054,
+    "database.server.name": "mysql-server",
+    "database.include.list": "microservices_db",
+    "table.include.list": "microservices_db.users",
+    "plugin.name": "def",
+    "publication.autocreate.mode": "all.tables",
+    "topic.prefix": "cdc",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": false,
+    "key.converter.schemas.enable": false,
+    "transforms": "route",
+    "transforms.route.type": "org.apache.kafka.connect.transforms.RegexRouter",
+    "transforms.route.regex": "([^.]+)\\.([^.]+)\\.([^.]+)",
+    "transforms.route.replacement": "$3-$2"
+  }
+}

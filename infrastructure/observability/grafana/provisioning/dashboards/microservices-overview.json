@@ -1,0 +1,43 @@
+{
+  "dashboard": {
+    "title": "Microservices Platform Overview",
+    "panels": [
+      {
+        "title": "JVM Memory Usage",
+        "targets": [
+          {
+            "expr": "jvm_memory_used_bytes{job=~\".*-service\"} / 1024 / 1024"
+          }
+        ],
+        "type": "graph"
+      },
+      {
+        "title": "HTTP Requests Per Second",
+        "targets": [
+          {
+            "expr": "rate(http_server_requests_seconds_count{job=~\".*-service\"}[1m])"
+          }
+        ],
+        "type": "graph"
+      },
+      {
+        "title": "Service Response Time (95th percentile)",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(http_server_requests_seconds_bucket{job=~\".*-service\"}[5m]))"
+          }
+        ],
+        "type": "graph"
+      },
+      {
+        "title": "Active Threads",
+        "targets": [
+          {
+            "expr": "jvm_threads_live_threads{job=~\".*-service\"}"
+          }
+        ],
+        "type": "graph"
+      }
+    ]
+  }
+}
