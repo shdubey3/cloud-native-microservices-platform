@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: auth-service
+
+server:
+  port: 8081
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    hostname: localhost
+    preferIpAddress: false
+
+jwt:
+  secret: shailesh-secret-key-change-in-production
+  expiration-ms: 3600000 # 1 hour
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+logging:
+  level:
+    com.shailesh: DEBUG
+    org.springframework.security: DEBUG
