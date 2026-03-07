@@ -1,11 +1,12 @@
 package com.shailesh.recommendation.messaging;
 
-import com.shailesh.recommendation.repository.RecommendationRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shailesh.recommendation.repository.RecommendationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Service;
 
 /**
@@ -59,7 +60,7 @@ public class UserChangeEventConsumer {
             groupId = "recommendation-service",
             concurrency = "3"
     )
-    public void consumeUserChangeEvent(String cdcEventJson) {
+    public void consumeUserChangeEvent(String cdcEventJson, Acknowledgment acknowledgment) {
         try {
             log.debug("Received user change event from Debezium");
 
@@ -101,8 +102,12 @@ public class UserChangeEventConsumer {
                 log.info("User {} event processed (no action needed at this time)", operation);
             }
 
+            if (acknowledgment != null) {
+                acknowledgment.acknowledge();
+            }
         } catch (Exception e) {
             log.error("Error processing CDC event: {}", e.getMessage(), e);
+            // Offset is not acknowledged so the message remains for retry/DLQ handling.
         }
     }
 }

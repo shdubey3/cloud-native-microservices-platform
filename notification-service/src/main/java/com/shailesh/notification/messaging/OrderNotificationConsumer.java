@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Service;
 
 /**
@@ -51,7 +52,7 @@ public class OrderNotificationConsumer {
             groupId = "notification-service",
             concurrency = "3"
     )
-    public void consumeOrderEvent(String orderEventJson) {
+    public void consumeOrderEvent(String orderEventJson, Acknowledgment acknowledgment) {
         try {
             JsonNode event = objectMapper.readTree(orderEventJson);
 
@@ -67,8 +68,12 @@ public class OrderNotificationConsumer {
             String message = buildNotificationMessage(eventType, status, orderId);
             sendNotification(userId, message);
 
+            if (acknowledgment != null) {
+                acknowledgment.acknowledge();
+            }
         } catch (Exception e) {
             log.error("Error processing order event: {}", e.getMessage(), e);
+            // Let the consumer group's error handler decide whether and how to retry.
         }
     }
 

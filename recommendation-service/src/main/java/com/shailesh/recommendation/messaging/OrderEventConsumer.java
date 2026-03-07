@@ -1,12 +1,13 @@
 package com.shailesh.recommendation.messaging;
 
-import com.shailesh.recommendation.document.UserRecommendation;
-import com.shailesh.recommendation.repository.RecommendationRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shailesh.recommendation.document.UserRecommendation;
+import com.shailesh.recommendation.repository.RecommendationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -56,7 +57,7 @@ public class OrderEventConsumer {
             groupId = "recommendation-service",
             concurrency = "3"
     )
-    public void consumeOrderEvent(String orderEventJson) {
+    public void consumeOrderEvent(String orderEventJson, Acknowledgment acknowledgment) {
         try {
             log.debug("Received order event for processing");
 
@@ -73,7 +74,7 @@ public class OrderEventConsumer {
                     .recommendedProductIds(new ArrayList<>())
                     .preferredCategories(new ArrayList<>())
                     .generatedAt(LocalDateTime.now())
-                    .build()); 
+                    .build());
 
             // Update recommendations based on order event
             // In reality, this would run ML model or collaborative filtering
@@ -82,8 +83,14 @@ public class OrderEventConsumer {
             recommendationRepository.save(rec);
             log.info("Recommendation updated for user: {}", userId);
 
+            // Manually acknowledge only after successful processing.
+            if (acknowledgment != null) {
+                acknowledgment.acknowledge();
+            }
         } catch (Exception e) {
             log.error("Error processing order event: {}", e.getMessage(), e);
+            // Leave offset unacknowledged so the message can be retried according to
+            // the consumer group's error-handling configuration.
         }
     }
 }

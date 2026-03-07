@@ -8,7 +8,9 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       concurrency: 3
-      enable-auto-commit: true
+      # Use manual acknowledgements in listeners so offsets are only committed
+      # after successful processing.
+      enable-auto-commit: false
       auto-offset-reset: earliest
 
 server:
