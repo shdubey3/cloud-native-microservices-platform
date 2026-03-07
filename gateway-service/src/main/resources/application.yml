@@ -8,7 +8,9 @@ spring:
       globalcors:
         corsConfigurations:
           '[/**]':
-            allowedOrigins: "*"
+            # In production, always scope this to explicit frontend origins.
+            # For local development, you can override GATEWAY_ALLOWED_ORIGINS via environment.
+            allowedOrigins: ${GATEWAY_ALLOWED_ORIGINS:http://localhost:3000}
             allowedMethods:
               - GET
               - POST
@@ -16,7 +18,8 @@ spring:
               - DELETE
               - OPTIONS
             allowedHeaders: "*"
-            allowCredentials: true
+            # We rely on Authorization headers instead of cookies, so credentials are not required.
+            allowCredentials: false
 
 server:
   port: 8080
@@ -30,7 +33,8 @@ eureka:
     preferIpAddress: false
 
 jwt:
-  secret: shailesh-secret-key-change-in-production
+  # Secret can be overridden via environment: JWT_SECRET
+  secret: ${JWT_SECRET:shailesh-secret-key-change-in-production}
 
 management:
   endpoints:

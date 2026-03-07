@@ -14,7 +14,8 @@ eureka:
     preferIpAddress: false
 
 jwt:
-  secret: shailesh-secret-key-change-in-production
+  # Secret can be overridden via environment: JWT_SECRET
+  secret: ${JWT_SECRET:shailesh-secret-key-change-in-production}
   expiration-ms: 3600000 # 1 hour
 
 management:
