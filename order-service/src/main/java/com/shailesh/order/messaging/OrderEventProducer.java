@@ -58,11 +58,15 @@ public class OrderEventProducer {
             Message<String> message = MessageBuilder
                     .withPayload(eventJson)
                     .setHeader(KafkaHeaders.TOPIC, orderEventsTopic)
-                    .setHeader("kafka_messageKey", partitionKey)
+                    // Use the standard MESSAGE_KEY header so the Kafka producer
+                    // uses userId as the partitioning key.
+                    .setHeader(KafkaHeaders.MESSAGE_KEY, partitionKey)
                     .setHeader("event_type", event.eventType())
                     .build();
 
-            kafkaTemplate.send(message).get();
+            // Send asynchronously; failures are surfaced via logs/metrics rather than
+            // blocking the HTTP request thread on broker latency.
+            kafkaTemplate.send(message);
             log.info("Order event published: {} for order {} (user: {})",
                     event.eventType(), event.orderId(), event.userId());
 
