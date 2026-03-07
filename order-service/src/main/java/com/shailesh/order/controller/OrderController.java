@@ -3,6 +3,9 @@ package com.shailesh.order.controller;
 import com.shailesh.order.entity.Order;
 import com.shailesh.order.messaging.OrderEventProducer;
 import com.shailesh.order.repository.OrderRepository;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -46,7 +49,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<OrderDto> createOrder(@RequestBody CreateOrderRequest request) {
+    public ResponseEntity<OrderDto> createOrder(@Valid @RequestBody CreateOrderRequest request) {
         try {
             Order order = Order.builder()
                     .userId(request.userId())
@@ -133,7 +136,7 @@ public class OrderController {
     ) {}
 
     public record CreateOrderRequest(
-            Long userId,
-            java.math.BigDecimal totalAmount
+            @NotNull Long userId,
+            @NotNull @Min(0) java.math.BigDecimal totalAmount
     ) {}
 }

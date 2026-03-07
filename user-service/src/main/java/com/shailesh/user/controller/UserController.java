@@ -4,6 +4,9 @@ import com.shailesh.user.entity.User;
 import com.shailesh.user.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,7 +46,7 @@ public class UserController {
     }
 
     @GetMapping("/email")
-    public ResponseEntity<UserDto> getUserByEmail(@RequestParam String email) {
+    public ResponseEntity<UserDto> getUserByEmail(@RequestParam @Email String email) {
         Optional<User> user = userRepository.findByEmail(email);
         return user.map(u -> ResponseEntity.ok(toDto(u)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -57,7 +60,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> createUser(@RequestBody CreateUserRequest request) {
+    public ResponseEntity<UserDto> createUser(@Valid @RequestBody CreateUserRequest request) {
         try {
             User user = User.builder()
                     .username(request.username())
@@ -83,7 +86,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @RequestBody UpdateUserRequest request) {
+    public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUserRequest request) {
         try {
             Optional<User> userOpt = userRepository.findById(id);
             if (userOpt.isEmpty()) {
@@ -151,10 +154,10 @@ public class UserController {
     ) {}
 
     public record CreateUserRequest(
-            String username,
-            String email,
-            String firstName,
-            String lastName,
+            @NotBlank String username,
+            @NotBlank @Email String email,
+            @NotBlank String firstName,
+            @NotBlank String lastName,
             String samlSubject,
             String roles
     ) {}

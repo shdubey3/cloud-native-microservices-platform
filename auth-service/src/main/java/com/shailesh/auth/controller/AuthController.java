@@ -3,6 +3,9 @@ package com.shailesh.auth.controller;
 import com.shailesh.auth.client.UserServiceClient;
 import com.shailesh.auth.service.JwtTokenService;
 import com.shailesh.auth.service.SamlValidatorService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -109,7 +112,7 @@ public class AuthController {
      * @return TokenResponse with generated JWT
      */
     @PostMapping("/token")
-    public ResponseEntity<TokenResponse> generateToken(@RequestBody TokenRequest request) {
+    public ResponseEntity<TokenResponse> generateToken(@Valid @RequestBody TokenRequest request) {
         try {
             String token = jwtTokenService.generateToken(
                     request.userId(),
@@ -134,8 +137,8 @@ public class AuthController {
 
     // DTOs
     public record TokenRequest(
-            String userId,
-            String email,
+            @NotBlank String userId,
+            @NotBlank @Email String email,
             String roles
     ) {}
 

@@ -3,6 +3,10 @@ package com.shailesh.catalog.controller;
 import com.shailesh.catalog.document.Product;
 import com.shailesh.catalog.repository.ProductRepository;
 import com.shailesh.catalog.service.ProductCacheService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -46,7 +50,7 @@ public class CatalogController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductDto> createProduct(@RequestBody CreateProductRequest request) {
+    public ResponseEntity<ProductDto> createProduct(@Valid @RequestBody CreateProductRequest request) {
         Product product = Product.builder()
                 .name(request.name())
                 .description(request.description())
@@ -67,7 +71,7 @@ public class CatalogController {
     @PutMapping("/{id}")
     public ResponseEntity<ProductDto> updateProduct(
             @PathVariable String id,
-            @RequestBody UpdateProductRequest request) {
+            @Valid @RequestBody UpdateProductRequest request) {
         var productOpt = productRepository.findById(id);
         if (productOpt.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -113,17 +117,17 @@ public class CatalogController {
     ) {}
 
     public record CreateProductRequest(
-            String name,
+            @NotBlank String name,
             String description,
-            java.math.BigDecimal price,
-            String sku,
-            Integer quantity,
+            @NotNull @Min(0) java.math.BigDecimal price,
+            @NotBlank String sku,
+            @NotNull @Min(0) Integer quantity,
             List<String> categories
     ) {}
 
     public record UpdateProductRequest(
             String name,
-            java.math.BigDecimal price,
-            Integer quantity
+            @Min(0) java.math.BigDecimal price,
+            @Min(0) Integer quantity
     ) {}
 }
