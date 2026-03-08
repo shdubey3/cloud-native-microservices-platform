@@ -58,9 +58,8 @@ public class OrderEventProducer {
             Message<String> message = MessageBuilder
                     .withPayload(eventJson)
                     .setHeader(KafkaHeaders.TOPIC, orderEventsTopic)
-                    // Use the standard MESSAGE_KEY header so the Kafka producer
-                    // uses userId as the partitioning key.
-                    .setHeader(KafkaHeaders.MESSAGE_KEY, partitionKey)
+                    // Use the standard KafkaHeaders.PARTITION_ID header for partitioning key
+                    .setHeader("kafka_messageKey", partitionKey.getBytes())
                     .setHeader("event_type", event.eventType())
                     .build();
 
