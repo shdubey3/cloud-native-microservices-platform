@@ -3,6 +3,7 @@ package com.shailesh.auth.client;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,16 +23,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface UserServiceClient {
 
     @GetMapping("/users/email")
-    ResponseEntity<UserDto> getUserByEmail(@RequestParam String email);
+    ResponseEntity<UserDto> getUserByEmail(@RequestParam("email") String email);
 
     @GetMapping("/users/saml")
-    ResponseEntity<UserDto> getUserBySamlSubject(@RequestParam String samlSubject);
+    ResponseEntity<UserDto> getUserBySamlSubject(@RequestParam("samlSubject") String samlSubject);
 
     @PostMapping("/users")
     ResponseEntity<UserDto> createUser(@RequestBody CreateUserRequest request);
 
     @GetMapping("/users/id/{id}")
-    ResponseEntity<UserDto> getUserById(@RequestParam String id);
+    ResponseEntity<UserDto> getUserById(@PathVariable("id") String id);
 
     // DTOs for inter-service communication
     record UserDto(
