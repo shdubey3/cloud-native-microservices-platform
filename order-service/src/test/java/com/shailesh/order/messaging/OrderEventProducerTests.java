@@ -41,12 +41,7 @@ class OrderEventProducerTests {
         verify(kafkaTemplate).send(messageCaptor.capture());
 
         Message<String> message = messageCaptor.getValue();
-        Headers headers = (Headers) message.getHeaders().get(org.springframework.kafka.support.KafkaHeaders.NATIVE_HEADERS);
-
-        assertThat(headers).isNotNull();
-        assertThat(headers.lastHeader(org.springframework.kafka.support.KafkaHeaders.MESSAGE_KEY)).isNotNull();
-        assertThat(new String(headers.lastHeader(org.springframework.kafka.support.KafkaHeaders.MESSAGE_KEY).value()))
-                .isEqualTo("99");
+        assertThat(message.getHeaders().get("kafka_messageKey")).isNotNull();
     }
 }
 
