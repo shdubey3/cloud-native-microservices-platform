@@ -2,8 +2,8 @@ FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 
-# Install git for config server (needed for local git repo)
-RUN apk add --no-cache git
+# Install git and curl for config server
+RUN apk add --no-cache git curl
 
 # Initialize Git configuration repository
 RUN mkdir -p /tmp/config-repo && \
